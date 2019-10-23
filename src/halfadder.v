@@ -4,7 +4,7 @@
  * 	Training Source Code			*
  ************************************************/
 
-module halfadder(Sum, CarryOut, a, b)
+module halfadder(Sum, CarryOut, a, b);
 
 	input a, b;
 	output CarryOut;

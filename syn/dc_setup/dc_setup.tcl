@@ -59,21 +59,5 @@ set_app_var synthetic_library dw_foundation.sldb
 
 
 set_app_var link_library "* $target_library $ADDITIONAL_LINK_LIB_FILES $synthetic_library"
-if {[shell_is_in_topographical_mode]} {
-# Only create new Milkyway design library if it doesn't already exist
-   if {![file isdirectory $mw_design_library ]} {
-      create_mw_lib   -technology $TECH_FILE \
-                      -mw_reference_library $mw_reference_library \
-                      $mw_design_library
-    } else {
-      # If Milkyway design library already exists, ensure that it is consistent with specified Milkyway reference libraries
-      set_mw_lib_reference $mw_design_library -mw_reference_library $mw_reference_library
-    }
-      open_mw_lib     $mw_design_library
-    }
-      set_tlu_plus_files -max_tluplus $TLUPLUS_MAX_FILE\
-			 -min_tluplus $TLUPLUS_MIN_FILE\
-			 -tech2itf_map $MAP_FILE 
-      check_tlu_plus_file
 
 puts "RM-Info: Completed script [info script]\n"

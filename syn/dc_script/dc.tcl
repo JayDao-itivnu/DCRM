@@ -3,28 +3,26 @@
 # Script: dc.tcl
 # Modified date: 10.7.2019
 # Version: 2019.06  
-# Copyright (C) 2017-2019 Viettel IC Design Center. All rights reserved.
-#################################################################################
 ################################################################################
 
 set PROJECT_DIR		$env(PROJECT_DIR)
 set DESIGN_NAME		$env(DESIGN_NAME)
 set LIB_DIR		$env(LIB_DIR)
 
-source -echo -verbose ./setup/dc_setup.tcl
+source -echo -verbose ./dc_setup/dc_setup.tcl
 set_app_var spg_enable_via_resistance_support true
 #################################################################################
 # Read the top-down RTL Design
 #################################################################################
 define_design_lib WORK -path ./WORK
-source -echo -verbose ./setup/read_design.tcl
+source -echo -verbose ./dc_setup/read_design.tcl
 link
 write -hierarchy -format ddc -output ${RESULTS_DIR}/${DCRM_FINAL_DDC_OUTPUT_FILE}
-
+# return 1
 #################################################################################
 # Read the Design Timing Constraints 
 #################################################################################
-source -echo -verbose ${PROJECT_DIR}/syn/setup/${DCRM_CONSTRAINTS_INPUT_FILE}
+source -echo -verbose ${PROJECT_DIR}/syn/inputs/${DCRM_CONSTRAINTS_INPUT_FILE}
 	
 #################################################################################
 # Group nets, pins
@@ -33,7 +31,7 @@ set ports_clock_root [filter_collection [get_attribute [get_clocks] sources] obj
 group_path -name REGOUT -to [all_outputs] 
 group_path -name REGIN -from [remove_from_collection [all_inputs] ${ports_clock_root}] 
 group_path -name COMBO -from [remove_from_collection [all_inputs] ${ports_clock_root}] -to [all_outputs]
-
+# return 1
 #################################################################################
 # Apply Additional Optimization Constraints
 #################################################################################
@@ -44,22 +42,6 @@ set_fix_multiple_port_nets -all -buffer_constants
 # Check the current design for consistency
 check_design -summary
 check_design > ${REPORTS_DIR}/${DCRM_CHECK_DESIGN_REPORT}
-
-#################################################################################
-# Variable and Command Settings before first Compile Ultra Synthesis
-#################################################################################
-# return 1
-# set_app_var compile_timing_high_effort true
-set_app_var placer_max_cell_density_threshold 0.8        
-set_congestion_options -max_util 0.9
-
-# Setting following variable to true may affect run time
-
-set_app_var compile_timing_high_effort_tns true
-
-#The following variable helps to reduce the total negative slack of the design
-
-set_app_var placer_tns_driven true
 
 # The following variable enables register replication across the hierarchy by creating new ports
 # on the instances of the subdesigns if it is necessary to improve the timing of the design
@@ -80,9 +62,6 @@ set_svf -off
 #################################################################################
 # Write out Design Data
 #################################################################################
-
-write_floorplan -all ${RESULTS_DIR}/${DCRM_1st_DCT_FINAL_FLOORPLAN_OUTPUT_FILE}
-write_def -components -output ${RESULTS_DIR}/${DCRM_1st_DCT_SPG_PLACEMENT_OUTPUT_FILE}
 # Do not write out net RC info into SDC
 set_app_var write_sdc_output_lumped_net_capacitance false
 set_app_var write_sdc_output_net_resistance false

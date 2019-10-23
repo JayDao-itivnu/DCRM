@@ -15,7 +15,7 @@ define_design_lib WORK -path ./WORK
 # Read verilog file
 analyze -format verilog ${PROJECT_DIR}/src/halfadder.v
 
-analyze -format vhdl ${PROJECT_DIR}/src/fulladdder.vhd
+analyze -format vhdl ${PROJECT_DIR}/src/fulladder.vhd
 
 elaborate -work work ${DESIGN_NAME}
 
